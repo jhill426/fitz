@@ -1,3 +1,5 @@
+import re
+
 from textnode import TextNode, TextType
 
 
@@ -48,3 +50,43 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 new_nodes.append(TextNode(part, text_type))
 
     return new_nodes
+
+
+def extract_markdown_images(text):
+    """
+    Extract markdown images from text.
+
+    Args:
+        text: Raw markdown text string
+
+    Returns:
+        List of tuples containing (alt_text, url) for each image
+
+    Example:
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif)"
+        returns [("rick roll", "https://i.imgur.com/aKaOqIh.gif")]
+    """
+    # Pattern matches ![alt text](url)
+    pattern = r"!\[([^\]]*)\]\(([^\)]+)\)"
+    matches = re.findall(pattern, text)
+    return matches
+
+
+def extract_markdown_links(text):
+    """
+    Extract markdown links from text (excluding images).
+
+    Args:
+        text: Raw markdown text string
+
+    Returns:
+        List of tuples containing (anchor_text, url) for each link
+
+    Example:
+        text = "This is text with a link [to boot dev](https://www.boot.dev)"
+        returns [("to boot dev", "https://www.boot.dev")]
+    """
+    # Pattern matches [anchor text](url) but not ![alt text](url)
+    pattern = r"(?<!!)\[([^\]]+)\]\(([^\)]+)\)"
+    matches = re.findall(pattern, text)
+    return matches
